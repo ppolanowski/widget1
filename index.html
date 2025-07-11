@@ -5,20 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Task Manager</title>
     <style>
-      /* Podstawowe reset i skalowanie */
+      /* Reset i responsywna typografia */
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
       html {
-        font-size: 14px;
-      }
-      @media screen and (min-width: 2560px) {
-        /* Większe elementy dla 4K */
-        html {
-          font-size: 16px;
-        }
+        /* Płynne skalowanie fontów między 14px a 16px w zależności od szerokości ekranu */
+        font-size: clamp(0.875rem, 1vw, 1rem);
       }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial,
@@ -28,9 +23,8 @@
       }
       .container {
         width: 100%;
-        max-width: 1920px;
+        max-width: 1200px;
         margin: auto;
-        min-height: 100vh;
         padding: 1rem;
         display: flex;
         flex-direction: column;
@@ -52,14 +46,12 @@
         margin-bottom: 0.25rem;
         color: #2c3e50;
         font-weight: 500;
-        font-size: 1rem;
       }
       input[type="text"] {
         width: 100%;
         padding: 0.75rem 1rem;
         border: 1px solid #e1e8ed;
         border-radius: 0.375rem;
-        font-size: 1rem;
         transition: all 0.2s;
         height: 2.5rem;
       }
@@ -73,7 +65,6 @@
         padding: 0.75rem 1rem;
         border: 1px solid #e1e8ed;
         border-radius: 0.375rem;
-        font-size: 1rem;
         transition: all 0.2s;
         resize: none;
         min-height: 6rem;
@@ -98,7 +89,6 @@
       .suggestion-item {
         padding: 0.5rem 1rem;
         cursor: pointer;
-        font-size: 1rem;
       }
       .suggestion-item:hover,
       .suggestion-item.active {
@@ -106,14 +96,12 @@
       }
       .toggle-button {
         padding: 0 0.75rem;
-        width: auto;
         min-width: 10rem;
         height: 2.5rem;
         background: #333;
         color: #fff;
         border: none;
         border-radius: 0.375rem;
-        font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
