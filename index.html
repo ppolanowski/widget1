@@ -1,0 +1,234 @@
+```html
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial,
+          sans-serif;
+        background: #fff;
+        min-height: 100vh;
+      }
+      .container {
+        width: 100%;
+        min-height: 100vh;
+        background: #fff;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .form-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+      }
+      .form-group {
+        flex: 1;
+        position: relative;
+      }
+      label {
+        display: block;
+        margin-bottom: 4px;
+        color: #2c3e50;
+        font-weight: 500;
+        font-size: 13px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #e1e8ed;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.2s;
+        height: 40px;
+      }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      }
+      textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #e1e8ed;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.2s;
+        resize: none;
+        min-height: 100px;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      }
+      .suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #e1e8ed;
+        border-radius: 6px;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .suggestion-item {
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+      .suggestion-item:hover,
+      .suggestion-item.active {
+        background: #f0f0f0;
+      }
+      .toggle-button {
+        padding: 0 10px;
+        width: 140px;
+        height: 40px;
+        background: #333;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .toggle-button:hover {
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form id="taskForm" autocomplete="off">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="title">Tytuł zgłoszenia</label>
+            <input type="text" id="title" placeholder="Tytuł" required />
+          </div>
+          <div class="form-group">
+            <label for="city">Miasto</label>
+            <input type="text" id="city" placeholder="Wpisz miasto" required />
+            <div id="citySuggestions" class="suggestions" hidden></div>
+          </div>
+          <button type="button" id="toggleButton" class="toggle-button">
+            Praca dodatkowa
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1 1 100%">
+            <label for="description">Opis</label>
+            <textarea
+              id="description"
+              placeholder="Opis zadania"
+              required
+            ></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <script>
+      const cities = [
+        "Bydgoszcz",
+        "Elbląg",
+        "Gdańsk B",
+        "Gdańsk S",
+        "Słupsk",
+        "Koszalin",
+        "Toruń",
+        "Olsztyn",
+        "Suwałki",
+        "Gorzów Wielkopolski",
+        "Piła",
+        "Szczecin",
+        "Przecław",
+      ];
+      const cityInput = document.getElementById("city");
+      const suggestionsBox = document.getElementById("citySuggestions");
+      let activeIndex = -1;
+      function renderSuggestions(matches) {
+        suggestionsBox.innerHTML = "";
+        matches.forEach((city, index) => {
+          const div = document.createElement("div");
+          div.textContent = city;
+          div.className = "suggestion-item";
+          if (index === activeIndex) div.classList.add("active");
+          div.addEventListener("click", () => selectCity(city));
+          suggestionsBox.appendChild(div);
+        });
+      }
+      function selectCity(city) {
+        cityInput.value = city;
+        suggestionsBox.hidden = true;
+        activeIndex = -1;
+      }
+      cityInput.addEventListener("input", () => {
+        const value = cityInput.value.trim().toLowerCase();
+        if (!value) {
+          suggestionsBox.hidden = true;
+          return;
+        }
+        const matches = cities.filter((c) => c.toLowerCase().includes(value));
+        if (matches.length === 0) {
+          suggestionsBox.hidden = true;
+          return;
+        }
+        renderSuggestions(matches);
+        suggestionsBox.hidden = false;
+        if (matches.length === 1) selectCity(matches[0]);
+      });
+      cityInput.addEventListener("keydown", (e) => {
+        const items = suggestionsBox.querySelectorAll(".suggestion-item");
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          activeIndex = (activeIndex + 1) % items.length;
+          renderSuggestions(Array.from(items).map((i) => i.textContent));
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          activeIndex = (activeIndex - 1 + items.length) % items.length;
+          renderSuggestions(Array.from(items).map((i) => i.textContent));
+        } else if (e.key === "Enter" && activeIndex > -1) {
+          e.preventDefault();
+          selectCity(items[activeIndex].textContent);
+        } else if (e.key === "Backspace") {
+          const val = cityInput.value.trim();
+          if (cities.some((c) => c === val) && suggestionsBox.hidden) {
+            cityInput.value = "";
+            suggestionsBox.hidden = true;
+            activeIndex = -1;
+            e.preventDefault();
+          }
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".form-group")) {
+          suggestionsBox.hidden = true;
+          activeIndex = -1;
+        }
+      });
+      const toggleButton = document.getElementById("toggleButton");
+      let toggleState = false;
+      toggleButton.addEventListener("click", () => {
+        toggleState = !toggleState;
+        toggleButton.textContent = toggleState ? "Ryczałt" : "Praca dodatkowa";
+      });
+    </script>
+  </body>
+</html>
+```
